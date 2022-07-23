@@ -1,20 +1,24 @@
-<?php 
+<?php
+session_start(); // create PHPSESSID cookies on the client side
 //echo date('h:i:s')."\n";sleep(5);echo date('h:i:s')."\n"; // testing that the button is blocked for the duration of the server response
-// reading a file and writing it to a string, converting string to associative array:
-$alldata = json_decode( file_get_contents('database.json'), true ); 
-$data = json_decode( file_get_contents('php://input'), true );
-require_once "cleardata.php";
-$data['login'] = cleardata($data['login']);
-// hashing with a variable SALT and increased algorithm complexity - 12 (bcrypt is safer than md5):
-// password_hash() returns the algorithm, cost, and salt as parts of the hash:
-$data['password'] = password_hash( cleardata($data['password']), PASSWORD_DEFAULT, ['cost' => 12]);
-if (in_array( $data['login'], array_column($alldata, 'login'))) { // searching for the same login
-    $loginmsg='this login is already used, use another one';
+require_once "crudOOP.php"; // securityOOP.php is also included in crudOOP.php
+Db::$jsonFile = 'php://input';
+$data = Db::read();
+Db::$jsonFile = 'database.json';
+$alldata = Db::read();
+$data['login'] = Safe::cleardata($data['login']);
+$data['password'] = Safe::hash($data);
+if (!Db::isFieldUnique($data, 'login'))
+{ // searching for the same login
+    $loginmsg = 'this login is already used, use another one';
 }
-  elseif (in_array( $data['email'], array_column($alldata, 'email'))) { // searching for the same email
-    $emailmsg='this email is already used, use another one';
-} else {
-    array_push($alldata, $data);
+elseif (!Db::isFieldUnique($data, 'email'))
+{ // searching for the same email
+    $emailmsg = 'this email is already used, use another one';
 }
-file_put_contents('database.json', json_encode($alldata)); // converting to json string and writing json database
-file_put_contents('php://output',json_encode(["loginmsg"=>$loginmsg ?? '',"emailmsg"=>$emailmsg ?? '']));//converting to json string and writing json output
+else
+{
+    Db::update($data);
+}
+Db::$jsonFile = 'php://output';
+Db::create(["loginmsg" => $loginmsg ?? '', "emailmsg" => $emailmsg ?? '']); // send result to browser

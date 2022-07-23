@@ -1,27 +1,19 @@
-<?php 
-set_error_handler('err_handler');
-function err_handler($errno, $errmsg, $filename, $linenum) {
-$date = date('Y-m-d H:i:s (T)');
-$f = fopen('errors.txt', 'a');
-if (!empty($f)) {
-$filename  =str_replace($_SERVER['DOCUMENT_ROOT'],'',$filename);
-$err  = "$errmsg = $filename = $linenum\r\n";
-fwrite($f, $err);
-fclose($f);
-}
-}
-require_once "cleardata.php";
+<?php
+session_start(); // create PHPSESSID cookies on the client side
 //echo date('h:i:s')."\n";sleep(5);echo date('h:i:s')."\n"; // testing that the button is blocked for the duration of the server response
-// reading a file and writing it to a string, converting string to associative array:
-$alldata = json_decode( file_get_contents('database.json'), true ); 
-$data = json_decode( file_get_contents('php://input'), true );
-if (! is_int( $loginkey = array_search( cleardata($data['login']), array_column($alldata, 'login') )) ) { // =, not ==
-    $loginmsg='this login is not registered'; // checking for passwords with the same key as the login; login is unique, but not the password:
-} elseif ( password_verify( cleardata($data['password']), $alldata[$loginkey]['password']) ) { // checking if the password matches the hash
-    session_start(); // creating PHPSESSID cookies on the client side
-    $_SESSION['name'] = $alldata[$loginkey]['name'];    
-} else {
-    $passwordmsg='wrong password';
-}
-// converting to json string and writing json output:
-file_put_contents('php://output', json_encode(["loginmsg"=>$loginmsg ?? '', "passwordmsg"=>$passwordmsg ?? '']));
+require_once "crudOOP.php"; // securityOOP.php is also included in crudOOP.php
+Db::$jsonFile = 'php://input';
+$data = Db::read();
+Db::$jsonFile = 'database.json';
+$alldata = Db::read();
+$loginkey = Db::loginKey($data);
+if (!is_int($loginkey))
+ // php function array_search will return the key number if an element is found, and FALSE if it doesn't find it
+    $loginmsg = 'this login is not registered';
+elseif (Db::isHash($loginkey, $data))
+    $_SESSION['name'] = $alldata[$loginkey]['name'];
+else
+    $passwordmsg = 'wrong password';
+Db::$jsonFile = 'php://output';
+Db::create(["loginmsg" => $loginmsg ?? '', "passwordmsg" => $passwordmsg ?? '']); // send result to browser
+
