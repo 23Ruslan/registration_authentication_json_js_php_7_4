@@ -109,11 +109,6 @@ $(document).ready(function() {
   })
 });
 
-if (document.getElementById('confirmpasswordmsg')) {
-  document.getElementById('confirmpasswordmsg').style.color = 'red';
-  document.getElementById('confirmpasswordmsg').innerHTML = 'it\'s empty'; // escaping a single quote
-}
-
 $('body').on('click', '.password-checkbox', function() { // just show password
   if ($(this).is(':checked')) {
       $('#password1').attr('type', 'text');

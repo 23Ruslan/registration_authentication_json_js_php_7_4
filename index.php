@@ -24,8 +24,8 @@
                      </td>
                      <td id="td50r">
                         <input type="text" required placeholder="Enter your login" id="login" form="regform" minlength="6" autofocus="autofocus"><br>
-                        <input type="password" required placeholder="Enter your password" id="password" form="regform" minlength="6" pattern="^.*(?=.*\d.*\d)(?=.*[a-zA-Z].*[a-zA-Z]).*$" onkeyup='checkpasswordconfirmation();'><br>
-                        <input type="password" required placeholder="Confirm your password" id="confirm_password" form="regform" minlength="6" pattern="^[a-zA-Z0-9]+$" onkeyup='checkpasswordconfirmation();'><br>
+                        <input type="password" required placeholder="Enter your password" id="password" form="regform" minlength="6" pattern="^.*(?=.*\d.*\d)(?=.*[a-zA-Z].*[a-zA-Z]).*$" oninput='checkpasswordconfirmation();'><br>
+                        <input type="password" required placeholder="Confirm your password" id="confirm_password" form="regform" minlength="6" pattern="^[a-zA-Z0-9]+$" oninput='checkpasswordconfirmation();'><br>
                         <input type="email" required placeholder="Enter your email" id="email" form="regform"><br>
                         <input type="text" required placeholder="Enter your full name" id="name" form="regform" minlength="2" pattern="^[a-zA-Z]+$"><br>
                      </td>
@@ -40,7 +40,7 @@
                      </td>
                   </tr>
                </table>
-               <button type="sumbit" form="regform" class="reg" id="reg" disabled>Sign up</button>
+               <button type="sumbit" form="regform" class="reg" id="reg">Sign up</button>
             </form>
          </td>
          <td class="col2">
