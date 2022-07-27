@@ -3,58 +3,67 @@ require_once "securityOOP.php";
 
 interface CRUD
 {
-    static function create($array);
-    static function read();
-    static function update($data);
-    static function delete();
+    function create($array);
+    function read();
+    function update($data);
+    function delete();
 }
 
-class Db extends Safe implements CRUD
+interface databaseSearching
+{
+    function isFieldUnique($data, $field);
+    function loginKey($data);
+}
+
+final class Db extends Safe implements CRUD, databaseSearching
 {
 
-    static $jsonFile;
+    private $jsonFile; // just an address
 
-    static function create($array)
+    function __construct($jsonFile) {
+        $this->jsonFile = $jsonFile;
+    }
+
+    function create($array)
     { // converting to json string and writing json database
-        return file_put_contents(self::$jsonFile, json_encode($array));
+        return file_put_contents($this->jsonFile, json_encode($array));
     }
 
-    static function read()
+    function read()
     { // reading a file and writing it to a string, converting string to associative array:
-        return json_decode(file_get_contents(self::$jsonFile) , true);
+        return json_decode(file_get_contents($this->jsonFile) , true);
     }
 
-    static function update($data)
+    function update($data)
     { // add information about the new user to the database
-        $allData = self::read();
+        $allData = $this->read();
         array_push($allData, $data);
-        self::create($allData);
+        $this->create($allData);
     }
 
-    static function delete()
+    function delete()
     { // method for testing and debugging
-        self::create([]);
+        $this->create([]);
     }
 
-    static function show()
+    function show()
     { // method for testing and debugging
-        return var_dump(self::read());
+        return var_dump($this->read());
     }
 
-    static function isFieldUnique($data, $field)
+    function isFieldUnique($data, $field)
     { // searching for the same value of this field
-        return !in_array($data[$field], array_column(self::read() , $field));
+        return !in_array($data[$field], array_column($this->read() , $field));
     }
 
-    static function loginKey($data)
+    function loginKey($data)
     { // the key is like the number of the registered user
-        return $loginkey = array_search(Safe::cleardata($data['login']) , array_column(self::read() , 'login'));
+        return $loginkey = array_search(Safe::cleardata($data['login']) , array_column($this->read() , 'login'));
     }
 
-    static function isHash($loginkey, $data)
+    function isHash($loginkey, $data)
     { // checking for passwords with the same key as the login; login is unique, but not the password:
-        return password_verify(Safe::cleardata($data['password']) , self::read() [$loginkey]['password']);
+        return password_verify(Safe::cleardata($data['password']) , $this->read() [$loginkey]['password']);
     } // it will return true if the hash of the password (password having the given key) matches the hash of the password entered by the user
     
 }
-
