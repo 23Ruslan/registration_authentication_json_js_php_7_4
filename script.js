@@ -1,23 +1,59 @@
-var checkpasswordconfirmation = function() { // password confirmation validation 
-  document.getElementById('regmsg').innerHTML = '';
-  if (document.getElementById('password').value ===
-      document.getElementById('confirm_password').value) {
-      document.getElementById('confirmpasswordmsg').style.color = 'green';
-      document.getElementById('confirmpasswordmsg').innerHTML = 'passwords match';
-      document.getElementById('reg').disabled = false;
+let checkpasswordconfirmation = function() { // password confirmation validation 
+  id('regMessage').innerHTML = '';
+  if (id('password').value ===
+      id('confirm_password').value) {
+      id('confirmpasswordMessage').style.color = 'green';
+      id('confirmpasswordMessage').innerHTML = 'passwords match';
+      id('reg').disabled = false;
   } else {
-      document.getElementById('confirmpasswordmsg').style.color = 'red';
-      document.getElementById('confirmpasswordmsg').innerHTML = 'passwords don\'t match'; // escaping a single quote
-      document.getElementById('reg').disabled = true;
-  } // validation of other fields is written in the html5 input tag via pattern attribute and other attributes
+      id('confirmpasswordMessage').style.color = 'red';
+      id('confirmpasswordMessage').innerHTML = 'passwords don\'t match'; 
+      id('reg').disabled = true;
+  } // validation of other fields is written in the html5 input tag via pattern attribute at index.php
 }
 
+let checksession = async function(naccessStatus = '') { // accessStatus is opening or closing access to db config php files before or after certain ajax requests 
+    let somedata = { accessStatus : naccessStatus };
+    let response = await fetch('getsessionstatus.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify(somedata)
+    });
+    let result = await response.json(); // the result is a check: a session is open for any user or not
+    id('username').innerHTML = result['message'];
+    id('hello').hidden = (result['message'] === "no_session");
+    id('unauthorized').hidden = !(result['message'] === "no_session");
+    id('regform').hidden = id('unauthorized').hidden;
+    id('logform').hidden = id('unauthorized').hidden;
+}
+
+function id(i) {
+    return document.getElementById(i);
+}
+
+$('body').on('click', '.password-checkbox', function() { // just show password
+    if ($(this).is(':checked')) {
+        $('#password1').attr('type', 'text');
+    } else {
+        $('#password1').attr('type', 'password');
+    }
+  });
+  
+$(document).ready(function() {
+checksession();
+  $('#logout').on('click', function() {
+    checksession('logout');
+  })
+});
 
 $(document).ready(function() {
   $('#logform').submit(async function() {
-      document.getElementById('reg').disabled = true; // block the buttons until the server responds
-      document.getElementById('auth').disabled = true;
-      document.getElementById('logout').disabled = true;
+      id('reg').disabled = true; // block the buttons until the server responds
+      id('auth').disabled = true;
+      id('logout').disabled = true;
+      let response1 = await checksession('makingAccessToDbConfigPHPFile'); // start access
       let user = {
           login: $('#login1').val(),
           password: $('#password1').val()
@@ -29,24 +65,25 @@ $(document).ready(function() {
           },
           body: JSON.stringify(user)
       });
-      document.getElementById('reg').disabled = false; // you can click on the buttons one more time only after the request has returned
-      document.getElementById('auth').disabled = false;
-      document.getElementById('logout').disabled = false;
       let result = await response.json();
-      document.getElementById('loginmsg1').innerHTML = result['loginmsg'];
-      document.getElementById('passwordmsg1').innerHTML = result['passwordmsg'];
-      document.getElementById('regmsg').innerHTML = 'Registration completed!';
+      let response2 = await checksession('closingAccessToDbConfigPHPFile'); // close access
+      id('reg').disabled = false; // user can click on the buttons one more time only after the request has returned
+      id('auth').disabled = false;
+      id('logout').disabled = false;
+
+      id('loginMessage1').innerHTML = result['loginMessage'];
+      id('passwordMessage1').innerHTML = result['passwordMessage'];
+      id('regMessage').innerHTML = 'Registration completed!';
       checkpasswordconfirmation();
-      if (result['loginmsg'] === result['passwordmsg']) // in login.php this strings are equal only when both are empty ''
-          checksession();
   })
 });
 
 $(document).ready(function() {
   $('#regform').submit(async function() {
-      document.getElementById('reg').disabled = true; // block the buttons until the server responds
-      document.getElementById('auth').disabled = true;
-      document.getElementById('logout').disabled = true;
+      id('reg').disabled = true; // block the buttons until the server responds
+      id('auth').disabled = true;
+      id('logout').disabled = true;
+      let response1 = await checksession('makingAccessToDbConfigPHPFile'); // start access
       let user = {
           login: $('#login').val(),
           password: $('#password').val(),
@@ -60,72 +97,16 @@ $(document).ready(function() {
           },
           body: JSON.stringify(user)
       });
-      document.getElementById('reg').disabled = false; // you can click on the buttons one more time only after the request has returned 
-      document.getElementById('auth').disabled = false;
-      document.getElementById('logout').disabled = false;
       let result = await response.json();
-      document.getElementById('loginmsg').innerHTML = result['loginmsg'];
-      document.getElementById('emailmsg').innerHTML = result['emailmsg'];
-      document.getElementById('regmsg').innerHTML = '';
-      if (result['loginmsg'] === result['emailmsg']) // in registration.php this strings are equal only when both are empty ''
-          document.getElementById('regmsg').innerHTML = 'Registration completed!';
-  })
-});
+      let response2 = await checksession('closingAccessToDbConfigPHPFile'); // close access
+      id('reg').disabled = false; // user can click on the buttons one more time only after the request has returned 
+      id('auth').disabled = false;
+      id('logout').disabled = false;
 
-$(document).ready(function() {
-  checksession();
-});
-var checksession = async function() {
-  let somedata = {};
-  let response = await fetch('getsessionstatus.php', {
-      method: 'POST',
-      headers: {
-          'Content-Type': 'application/json;charset=utf-8'
-      },
-      body: JSON.stringify(somedata)
-  });
-  let result = await response.json();
-  document.getElementById('username').innerHTML = result['msg'];
-  document.getElementById('hello').hidden = (result['msg'] === "no_session");
-  document.getElementById('unauthorized').hidden = !(result['msg'] === "no_session");
-  if (document.getElementById('regform') && document.getElementById('logform')) {
-      document.getElementById('regform').hidden = document.getElementById('unauthorized').hidden;
-      document.getElementById('logform').hidden = document.getElementById('unauthorized').hidden;
-  }
-}
-
-$(document).ready(function() {
-  $('#logout').on('click', async function() {
-      let somedata = {};
-      let response = await fetch('logout.php', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json;charset=utf-8'
-          },
-          body: JSON.stringify(somedata)
-      });
-      let result = await response.json();
-      checksession();
-  })
-});
-
-$('body').on('click', '.password-checkbox', function() { // just show password
-  if ($(this).is(':checked')) {
-      $('#password1').attr('type', 'text');
-  } else {
-      $('#password1').attr('type', 'password');
-  }
-});
-
-$(document).ready(function() {
-  $('button').on('click', async function() {
-      $.ajax({
-              method: "POST",
-              url: "getsessionstatus.php",
-              data: {}
-          })
-          .done(function(msg) {
-              // alert( msg ); // just for testing
-          });
+      id('loginMessage').innerHTML = result['loginMessage'];
+      id('emailMessage').innerHTML = result['emailMessage'];
+      id('regMessage').innerHTML = '';
+      if (result['loginMessage'] === result['emailMessage']) // in registration.php this strings are equal only when both are empty ''
+          id('regMessage').innerHTML = 'Registration completed!';
   })
 });

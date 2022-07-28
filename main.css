@@ -32,10 +32,10 @@ body {
   font-size: x-large; margin: 0.2em;
   text-align: center;
 }
-#loginmsg, #emailmsg, #loginmsg1, #passwordmsg1 {
+#loginMessage, #emailMessage, #loginMessage1, #passwordMessage1 {
   color : red;
 }
-#regmsg {
+#regMessage {
   color : green;
 }
 h5, #hello, #unauthorized {color: rgb(25, 0, 248); text-align: center;}

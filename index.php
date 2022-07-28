@@ -1,7 +1,6 @@
 <?php 
    session_start();
-   // basic revoking access to php db config files (login.php/registration.php) by checking if the browser was on index.php
-   $_SESSION["step1"] = password_hash("-g32gpm32g-?edm`~,pfw", PASSWORD_BCRYPT, ['cost' => 11]);
+   $_SESSION["step1"] = "-g32gpm32g-?edm`~,pfw"; // revoking access to php db config files (login.php/registration.php) by checking if the browser was on index.php
    require_once "header.php"; // instead of duplication header code ?>
 <head>
    <title>Main Page</title>
@@ -31,12 +30,12 @@
                      </td>
                      <span id="hint">hint: the registration fields will be fully validated only after the button is clicked. password - at least 6 characters, must include numbers and letters</span>
                      <td id="50l">
-                        <span id="loginmsg"></span><br>
-                        <span id="passwordmsg"></span><br>
-                        <span id="confirmpasswordmsg"></span><br>
-                        <span id="emailmsg"></span><br>
-                        <span id="namemsg"></span><br>
-                        <span id="regmsg"></span><br>
+                        <span id="loginMessage"></span><br>
+                        <span id="passwordMessage"></span><br>
+                        <span id="confirmpasswordMessage"></span><br>
+                        <span id="emailMessage"></span><br>
+                        <span id="nameMessage"></span><br>
+                        <span id="regMessage"></span><br>
                      </td>
                   </tr>
                </table>
@@ -54,8 +53,8 @@
                         <label><input type="checkbox" class="password-checkbox">show password</label>
                      </td>
                      <td id="td50l">
-                        <span id="loginmsg1"></span><br>
-                        <span id="passwordmsg1"></span><br>
+                        <span id="loginMessage1"></span><br>
+                        <span id="passwordMessage1"></span><br>
                      </td>
                   </tr>
                </table>
