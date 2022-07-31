@@ -12,7 +12,7 @@ let checkpasswordconfirmation = function() { // password confirmation validation
 	} // validation of other fields is written in the html5 input tag via pattern attribute at index.php
 }
 
-let checksession = async function(naccessStatus = '') { // accessStatus is opening or closing access to db config php files before or after certain ajax requests 
+let checksession = async function(naccessStatus = '') { // accessStatus is opening or closing access to db config php files (login.php/registration.php) before or after certain ajax requests 
 	let somedata = {
 		accessStatus: naccessStatus
 	};

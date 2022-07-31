@@ -46,7 +46,7 @@ class Safe implements whatIsSafety
                 $_SESSION["step2"] == "-k72gpm31g+?edm`8,pfw"
             )
         ) {
-            die(" ACCESS DENIED! ERROR 4042");
+            die(" ACCESS DENIED! ERROR 404");
         } // allow access to db config php files (login.php/registration.php) only for AJAX requests (only during their execution), deny access via direct link
     }
 }
